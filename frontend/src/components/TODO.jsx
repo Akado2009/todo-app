@@ -19,21 +19,21 @@ const useStyles = makeStyles(theme => ({
 const tasks = [
     {
         name: 'sadas',
-        until: 'ss',
         status: 'done',
-        description: '',
+        description: 'Simple desc',
+        id: 1,
     },
     {
         name: 'sadas',
-        until: 'ss',
         status: 'done',
-        description: '',
+        description: 'Simple desc',
+        id: 2,
     },
     {
         name: 'sadas',
-        until: 'ss',
         status: 'not',
-        description: '',
+        description: 'Simple desc',
+        id: 3,
     },
 ];
 

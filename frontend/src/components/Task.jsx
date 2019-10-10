@@ -11,6 +11,7 @@ import {
 import DoneIcon from '@material-ui/icons/Done';
 import BlockIcon from '@material-ui/icons/Block';
 
+import { pink, green } from '@material-ui/core/colors';
 import TaskInfo from './TaskInfo';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
@@ -26,8 +27,13 @@ const useStyles = makeStyles(theme => ({
     status: {
         float: 'right',
     },
-    icon: {
-        color: theme.palette.secondary.main,
+    doneIcon: {
+        color: green[500],
+        height: 30,
+        width: 30,
+    },
+    blockIcon: {
+        color: pink[500],
         height: 30,
         width: 30,
     },
@@ -38,38 +44,38 @@ const Task = (props) => {
     const classes = useStyles();
     const { task } = props;
 
-    const [expand, setExpand] = React.useState(false);
+    const [expanded, setExpand] = React.useState(false);
 
     return (
         <div>
             <Paper className={classes.paper}>
                 <Typography variant={"h5"}>
                     {
-                        expand ? 
-                        <IconButton onClick={() => setExpand(false)}>
+                        !expanded ? 
+                        <IconButton onClick={() => setExpand(true)}>
                             <ExpandMore
                                 className={classes.icon}
                                 />
                         </IconButton>
                         :
-                        <IconButton onClick={() => setExpand(true)}>
+                        <IconButton onClick={() => setExpand(false)}>
                             <ExpandLess
                                 className={classes.icon}
                                 />
                         </IconButton>
                     }
-                    {task.name}
+                    {task.Name}
                     <div className={classes.status}>
                         {
-                            task.status === 'done' ?
-                            <DoneIcon className={classes.icon} />
+                            task.Status === 'done' ?
+                            <DoneIcon className={classes.doneIcon} />
                             :
-                            <BlockIcon className={classes.icon} />
+                            <BlockIcon className={classes.blockIcon} />
                         }
                     </div>
                 </Typography>
                 {
-                    expand && <TaskInfo task={task} />
+                    expanded && <TaskInfo task={task} />
                 }
             </Paper>
         </div>

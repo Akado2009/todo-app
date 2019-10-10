@@ -35,7 +35,7 @@ const TaskInfo = (props) => {
             <Typography
                 variant={"body1"}
             >
-                {task.description}
+                {task.Description}
             </Typography>
             <Button
                 variant={"contained"}
@@ -64,7 +64,7 @@ const TaskInfo = (props) => {
             <DoneDialog
                 open={done}
                 handleClose={() => handleDone(false)}
-                id={task.id}
+                id={task.ID}
             />
             <UpdateDialog
                 open={update}
@@ -74,7 +74,7 @@ const TaskInfo = (props) => {
             <DeleteDialog
                 open={del}
                 handleClose={() => handleDelete(false)}
-                id={task.id}
+                id={task.ID}
             />
         </div>
     );

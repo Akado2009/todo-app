@@ -9,6 +9,9 @@ import {
 } from '@material-ui/core';
 
 import { makeStyles } from '@material-ui/core/styles';
+import SnackWarning from './SnackWarning';
+import axios from 'axios';
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -19,17 +22,70 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const UpdateDialog = (props) => {
+const AddDialog = (props) => {
 
     const classes = useStyles();
 
-    const [task, changeTask] = React.useState(props.task);
+    const [task, changeTask] = React.useState({
+        name: "",
+        description: "",
+    });
 
     const handleChange = (field) => (event) => {
         let tmpTask = Object.assign({}, task);
         tmpTask[field] = event.target.value;
         changeTask(tmpTask);
     };
+
+    const validate = (task) => {
+        if (task.name === "") {
+            return false;
+        } else if (task.description === "") {
+            return false;
+        }
+        return true;
+    };
+
+    const defaultSnack = {
+        open: false,
+        message: "empty",
+        variant: "success",
+        handleClose: () => {},
+    };
+
+    const [snack, handleSnack] = React.useState(defaultSnack);
+
+    const handleClose = () => {
+        handleSnack(defaultSnack);
+    };
+
+
+    const addTask = () => {
+        if (!validate(task)) {
+            handleSnack({
+                open: true,
+                message: "Check fields",
+                variant: "error",
+                handleClose: handleClose,
+            }); 
+        } else {
+            const data = {
+                name: task.name,
+                description: task.description,
+            };
+
+            axios.post("http://127.0.0.1:8000/add", data)
+                .then(response => {
+                    changeTask({name: "", description: ""})
+                    props.handleClose()
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        }
+    };
+
+    
 
     return (
         <div className={classes.root}>
@@ -38,7 +94,7 @@ const UpdateDialog = (props) => {
                 onClose={props.handleClose}
             >
                 <DialogTitle>
-                    {"Edit a task"}
+                    {"Add a task"}
                 </DialogTitle>
                 <DialogContent> 
                     <TextField
@@ -61,13 +117,14 @@ const UpdateDialog = (props) => {
                     <Button onClick={props.handleClose} color={"primary"}>
                         Cancel
                     </Button>
-                    <Button onClick={props.handleClose} color={"primary"} autoFocus>
+                    <Button onClick={addTask} color={"primary"} autoFocus>
                         Save
                     </Button>
                 </DialogActions>
             </Dialog>
+            <SnackWarning data={snack} />
         </div>
     );
 };
 
-export default UpdateDialog;
+export default AddDialog;

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -16,12 +18,21 @@ import (
 var client *mongo.Client
 var collection *mongo.Collection
 var idCounter int
+var allowedHeaders = "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization,X-CSRF-Token"
 
 //Task ...
 type Task struct {
 	Name        string
 	Status      string
 	Description string
+	ID          bson.ObjectId
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", allowedHeaders)
+	(*w).Header().Set("Access-Control-Expose-Headers", "Authorization")
 }
 
 func init() {
@@ -49,6 +60,7 @@ func init() {
 
 //FetchTasks fetches tasks from a db
 func FetchTasks(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var allTasks []Task
 	cur, err := collection.Find(context.TODO(), bson.D{{}})
 	if err != nil {
@@ -78,21 +90,46 @@ func FetchTasks(w http.ResponseWriter, r *http.Request) {
 
 //AddTask adds a task
 func AddTask(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if r.Method == http.MethodPost {
+		var task Task
+
+		err = json.Unmarshal(body, &task)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%+v\n", task)
+
+		task.Status = "not"
+		_, err = collection.InsertOne(context.TODO(), task)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	return
 }
 
 //UpdateTask updates a task
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	return
 }
 
 //DeleteTask deletes a task
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	return
 }
 
 //DoneTask marks task as done
 func DoneTask(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	return
 }
 
